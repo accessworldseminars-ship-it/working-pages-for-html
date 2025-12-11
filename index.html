@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Programs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1.main-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 36px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .program-card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+        
+        .program-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .program-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .program-header h3 {
+            font-size: 24px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .toggle-icon {
+            font-size: 28px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        .program-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .program-content.active {
+            padding: 30px;
+            max-height: 1000px;
+        }
+        
+        .program-content p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        
+        .program-content strong {
+            color: #333;
+            font-size: 18px;
+        }
+        
+        ul {
+            padding-left: 25px;
+            margin: 20px 0;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            color: #555;
+            line-height: 1.5;
+            font-size: 16px;
+            position: relative;
+        }
+        
+        li:before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: -25px;
+        }
+        
+        .program-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .access-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .access-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        @media (max-width: 768px) {
+            .program-header h3 {
+                font-size: 20px;
+            }
+            
+            .program-footer {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .access-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">🎯 Choose Your Program</h1>
+        
+        <!-- Program 1 -->
+        <div class="program-card">
+            <div class="program-header" onclick="toggleProgram(1)">
+                <h3><span>🧠</span> Ultimate Health Webinar</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="program-content" id="program-1">
+                <p><strong>Transform your health with our comprehensive webinar:</strong></p>
+                <ul>
+                    <li>90-minute deep dive into metabolic health and longevity</li>
+                    <li>Live Q&A session with certified health experts</li>
+                    <li>Printable guide, checklist, and action plan</li>
+                    <li>30-day access to recording and bonus materials</li>
+                    <li>Private worksheet for personalized planning</li>
+                    <li>Email support during the program</li>
+                </ul>
+                <div class="program-footer">
+                    <div>
+                        <span class="price">$97</span>
+                        <div style="color: #777; font-size: 14px; margin-top: 5px;">One-time payment</div>
+                    </div>
+                    <button class="access-button">Get Instant Access →</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Program 2 -->
+        <div class="program-card">
+            <div class="program-header" onclick="toggleProgram(2)">
+                <h3><span>💪</span> Fitness Masterclass Series</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="program-content" id="program-2">
+                <p><strong>Build your dream body with our complete fitness system:</strong></p>
+                <ul>
+                    <li>12-week progressive workout plan for all levels</li>
+                    <li>Video demonstrations for every exercise</li>
+                    <li>Comprehensive nutrition and supplement guide</li>
+                    <li>Access to private member community</li>
+                    <li>Weekly progress tracking sheets</li>
+                    <li>Monthly live coaching calls</li>
+                </ul>
+                <div class="program-footer">
+                    <div>
+                        <span class="price">$147</span>
+                        <div style="color: #777; font-size: 14px; margin-top: 5px;">One-time payment</div>
+                    </div>
+                    <button class="access-button">Get Instant Access →</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Program 3 -->
+        <div class="program-card">
+            <div class="program-header" onclick="toggleProgram(3)">
+                <h3><span>🍎</span> Nutrition Bootcamp</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="program-content" id="program-3">
+                <p><strong>Master your nutrition with our 28-day transformation:</strong></p>
+                <ul>
+                    <li>Complete 28-day meal plans with variations</li>
+                    <li>Shopping lists, recipes, and preparation guides</li>
+                    <li>Weekly group coaching and accountability calls</li>
+                    <li>Digital progress tracking and journal</li>
+                    <li>Macro calculator and portion control guide</li>
+                    <li>Lifetime access to updates</li>
+                </ul>
+                <div class="program-footer">
+                    <div>
+                        <span class="price">$197</span>
+                        <div style="color: #777; font-size: 14px; margin-top: 5px;">One-time payment</div>
+                    </div>
+                    <button class="access-button">Get Instant Access →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleProgram(num) {
+            const content = document.getElementById('program-' + num);
+            const icon = content.previousElementSibling.querySelector('.toggle-icon');
+            
+            // Toggle active class
+            content.classList.toggle('active');
+            
+            // Rotate icon
+            icon.textContent = content.classList.contains('active') ? '▲' : '▼';
+            
+            // Close other programs (optional)
+            // document.querySelectorAll('.program-content').forEach(otherContent => {
+            //     if (otherContent !== content && otherContent.classList.contains('active')) {
+            //         otherContent.classList.remove('active');
+            //         otherContent.previousElementSibling.querySelector('.toggle-icon').textContent = '▼';
+            //     }
+            // });
+        }
+        
+        // Optional: Open first program by default
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     toggleProgram(1);
+        // });
+    </script>
+</body>
+</html>
