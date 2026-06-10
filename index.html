@@ -1,279 +1,229 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Your Programs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AccessWorld Members Area</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #1A2744;
+            padding: 20px;
         }
-        
         .container {
-            max-width: 800px;
-            width: 100%;
-        }
-        
-        h1.main-title {
-            color: white;
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 36px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        
-        .program-card {
+            max-width: 1200px;
+            margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            border: 3px solid rgba(255,255,255,0.3);
-        }
-        
-        .program-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-        
-        .program-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-        
-        .program-header h3 {
-            font-size: 24px;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .toggle-icon {
-            font-size: 28px;
-            font-weight: bold;
-            transition: transform 0.3s ease;
-        }
-        
-        .program-content {
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .program-content.active {
+            border-radius: 10px;
             padding: 30px;
-            max-height: 1000px;
         }
-        
-        .program-content p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            font-size: 16px;
+        .login-box, .disclaimer-box {
+            max-width: 500px;
+            margin: 50px auto;
+            text-align: center;
         }
-        
-        .program-content strong {
-            color: #333;
-            font-size: 18px;
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        
-        ul {
-            padding-left: 25px;
-            margin: 20px 0;
-        }
-        
-        li {
-            margin-bottom: 12px;
-            color: #555;
-            line-height: 1.5;
-            font-size: 16px;
-            position: relative;
-        }
-        
-        li:before {
-            content: "✓";
-            color: #667eea;
-            font-weight: bold;
-            position: absolute;
-            left: -25px;
-        }
-        
-        .program-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 2px solid #f0f0f0;
-        }
-        
-        .price {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        .access-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        button {
+            background: #1D9E75;
             color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        
-        .access-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        .tier-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
         }
-        
-        @media (max-width: 768px) {
-            .program-header h3 {
-                font-size: 20px;
-            }
-            
-            .program-footer {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-            
-            .access-button {
-                width: 100%;
-            }
+        .tier-1 { background: #cce5ff; color: #004085; }
+        .lesson-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .lesson-card iframe {
+            width: 100%;
+            height: 300px;
+            border: none;
+            margin-top: 10px;
+        }
+        .admin-panel {
+            border: 2px solid #1D9E75;
+            padding: 20px;
+            margin-top: 30px;
+            background: #f0fdf9;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .nav-buttons button {
+            width: auto;
+            background: #6c757d;
+        }
+        .logout-btn {
+            background: #dc3545;
+            width: auto;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="main-title">🎯 Choose Your Program</h1>
-        
-        <!-- Program 1 -->
-        <div class="program-card">
-            <div class="program-header" onclick="toggleProgram(1)">
-                <h3><span>🧠</span> Ultimate Health Webinar</h3>
-                <span class="toggle-icon">▼</span>
+<div class="container" id="app">
+    <div id="view-login" class="login-box">
+        <h1>AccessWorld Seminars</h1>
+        <p>Member Portal</p>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="doLogin()">Login</button>
+        <p><a href="#" onclick="resetPassword()">Forgot password?</a></p>
+        <div id="status-msg" style="margin-top:10px; color:red;"></div>
+    </div>
+
+    <div id="view-disclaimer" style="display:none;">
+        <div class="disclaimer-box">
+            <h2>Legal Disclaimer & NDA</h2>
+            <div style="border:1px solid #ddd; padding:15px; height:200px; overflow-y:scroll;">
+                <p><strong>IMPORTANT NOTICE:</strong> The information provided is for educational purposes only...</p>
+                <p><strong>NON-DISCLOSURE AGREEMENT:</strong> You agree not to share any materials with third parties.</p>
             </div>
-            <div class="program-content" id="program-1">
-                <p><strong>Transform your health with our comprehensive webinar:</strong></p>
-                <ul>
-                    <li>90-minute deep dive into metabolic health and longevity</li>
-                    <li>Live Q&A session with certified health experts</li>
-                    <li>Printable guide, checklist, and action plan</li>
-                    <li>30-day access to recording and bonus materials</li>
-                    <li>Private worksheet for personalized planning</li>
-                    <li>Email support during the program</li>
-                </ul>
-                <div class="program-footer">
-                    <div>
-                        <span class="price">$97</span>
-                        <div style="color: #777; font-size: 14px; margin-top: 5px;">One-time payment</div>
-                    </div>
-                    <button class="access-button">Get Instant Access →</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Program 2 -->
-        <div class="program-card">
-            <div class="program-header" onclick="toggleProgram(2)">
-                <h3><span>💪</span> Fitness Masterclass Series</h3>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="program-content" id="program-2">
-                <p><strong>Build your dream body with our complete fitness system:</strong></p>
-                <ul>
-                    <li>12-week progressive workout plan for all levels</li>
-                    <li>Video demonstrations for every exercise</li>
-                    <li>Comprehensive nutrition and supplement guide</li>
-                    <li>Access to private member community</li>
-                    <li>Weekly progress tracking sheets</li>
-                    <li>Monthly live coaching calls</li>
-                </ul>
-                <div class="program-footer">
-                    <div>
-                        <span class="price">$147</span>
-                        <div style="color: #777; font-size: 14px; margin-top: 5px;">One-time payment</div>
-                    </div>
-                    <button class="access-button">Get Instant Access →</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Program 3 -->
-        <div class="program-card">
-            <div class="program-header" onclick="toggleProgram(3)">
-                <h3><span>🍎</span> Nutrition Bootcamp</h3>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="program-content" id="program-3">
-                <p><strong>Master your nutrition with our 28-day transformation:</strong></p>
-                <ul>
-                    <li>Complete 28-day meal plans with variations</li>
-                    <li>Shopping lists, recipes, and preparation guides</li>
-                    <li>Weekly group coaching and accountability calls</li>
-                    <li>Digital progress tracking and journal</li>
-                    <li>Macro calculator and portion control guide</li>
-                    <li>Lifetime access to updates</li>
-                </ul>
-                <div class="program-footer">
-                    <div>
-                        <span class="price">$197</span>
-                        <div style="color: #777; font-size: 14px; margin-top: 5px;">One-time payment</div>
-                    </div>
-                    <button class="access-button">Get Instant Access →</button>
-                </div>
-            </div>
+            <label><input type="checkbox" id="agree-checkbox"> I agree to the Disclaimer and NDA</label>
+            <button onclick="signDisclaimer()">Continue</button>
         </div>
     </div>
 
-    <script>
-        function toggleProgram(num) {
-            const content = document.getElementById('program-' + num);
-            const icon = content.previousElementSibling.querySelector('.toggle-icon');
-            
-            // Toggle active class
-            content.classList.toggle('active');
-            
-            // Rotate icon
-            icon.textContent = content.classList.contains('active') ? '▲' : '▼';
-            
-            // Close other programs (optional)
-            // document.querySelectorAll('.program-content').forEach(otherContent => {
-            //     if (otherContent !== content && otherContent.classList.contains('active')) {
-            //         otherContent.classList.remove('active');
-            //         otherContent.previousElementSibling.querySelector('.toggle-icon').textContent = '▼';
-            //     }
-            // });
+    <div id="view-dashboard" style="display:none;">
+        <div style="display:flex; justify-content:space-between;">
+            <h1>Welcome, <span id="user-email"></span></h1>
+            <div><span id="user-tier-badge" class="tier-badge"></span> <button class="logout-btn" onclick="doLogout()">Logout</button></div>
+        </div>
+        <div class="nav-buttons">
+            <button onclick="showTierContent('tier1')">Tier 1 - Core</button>
+            <button onclick="showTierContent('tier2')">Tier 2 - Advanced</button>
+            <button onclick="showTierContent('tier3')">Tier 3 - Lifelong</button>
+            <button onclick="showTierContent('tier4')">Tier 4 - Inner Circle</button>
+        </div>
+        <div id="tier1-content" class="tier-content"></div>
+        <div id="tier2-content" class="tier-content" style="display:none;"></div>
+        <div id="tier3-content" class="tier-content" style="display:none;"></div>
+        <div id="tier4-content" class="tier-content" style="display:none;"></div>
+        <div id="admin-panel" class="admin-panel" style="display:none;">
+            <h3>Admin: Register New Client</h3>
+            <input type="email" id="new-email" placeholder="Client Email">
+            <input type="password" id="new-password" placeholder="Password">
+            <select id="new-tier"><option value="1">Tier 1</option><option value="2">Tier 2</option><option value="3">Tier 3</option><option value="4">Tier 4</option></select>
+            <button onclick="adminCreateUser()">Create Client</button>
+            <div id="admin-msg"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://zwwodopezadqjazhajmx.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3d29kb3BlemFkcWphemhham14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzQ4ODEsImV4cCI6MjA5NjYxMDg4MX0.xiY_Kg0O0_g714YRHmgcuSd08qKi9ErJ1iz3ehZetIg";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+    let currentTier = 0;
+
+    async function doLogin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) return document.getElementById('status-msg').innerText = error.message;
+        currentUser = data.user;
+        await loadUserProfile();
+    }
+
+    async function loadUserProfile() {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+        if (!profile) {
+            await supabase.from('profiles').insert([{ id: currentUser.id, email: currentUser.email, membership_tier: 1, disclaimer_signed: false }]);
+            currentTier = 1;
+            showDisclaimer();
+        } else {
+            currentTier = profile.membership_tier;
+            if (!profile.disclaimer_signed) showDisclaimer();
+            else showDashboard();
         }
-        
-        // Optional: Open first program by default
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     toggleProgram(1);
-        // });
-    </script>
+    }
+
+    function showDisclaimer() {
+        document.getElementById('view-login').style.display = 'none';
+        document.getElementById('view-disclaimer').style.display = 'block';
+    }
+
+    async function signDisclaimer() {
+        if (!document.getElementById('agree-checkbox').checked) return alert('You must agree');
+        await supabase.from('profiles').update({ disclaimer_signed: true }).eq('id', currentUser.id);
+        showDashboard();
+    }
+
+    async function showDashboard() {
+        document.getElementById('view-login').style.display = 'none';
+        document.getElementById('view-disclaimer').style.display = 'none';
+        document.getElementById('view-dashboard').style.display = 'block';
+        document.getElementById('user-email').innerText = currentUser.email;
+        document.getElementById('user-tier-badge').innerText = `Tier ${currentTier}`;
+        if (currentUser.email === 'bossejosh@yahoo.com') document.getElementById('admin-panel').style.display = 'block';
+        await loadLessons();
+        showTierContent('tier1');
+    }
+
+    async function loadLessons() {
+        const { data: lessons } = await supabase.from('lessons').select('*').order('sort_order');
+        for (let tier = 1; tier <= 4; tier++) {
+            const container = document.getElementById(`tier${tier}-content`);
+            const tierLessons = lessons.filter(l => l.tier_required <= tier);
+            if (!tierLessons.length) { container.innerHTML = '<p>No lessons yet</p>'; continue; }
+            let html = '';
+            for (let lesson of tierLessons) {
+                if (lesson.tier_required <= currentTier) {
+                    html += `<div class="lesson-card"><h4>${lesson.title}</h4><p>${lesson.description || ''}</p><iframe src="${lesson.google_drive_embed_url}"></iframe></div>`;
+                } else {
+                    html += `<div class="lesson-card" style="opacity:0.6"><h4>🔒 ${lesson.title}</h4><p>Upgrade to Tier ${lesson.tier_required} to unlock</p></div>`;
+                }
+            }
+            container.innerHTML = html;
+        }
+    }
+
+    function showTierContent(tier) {
+        for (let i = 1; i <= 4; i++) document.getElementById(`tier${i}-content`).style.display = 'none';
+        document.getElementById(`${tier}-content`).style.display = 'block';
+    }
+
+    async function adminCreateUser() {
+        const email = document.getElementById('new-email').value;
+        const password = document.getElementById('new-password').value;
+        const tier = parseInt(document.getElementById('new-tier').value);
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) return document.getElementById('admin-msg').innerText = error.message;
+        await supabase.from('profiles').insert([{ id: data.user.id, email, membership_tier: tier, disclaimer_signed: false }]);
+        document.getElementById('admin-msg').innerText = `✅ ${email} created at Tier ${tier}`;
+    }
+
+    async function resetPassword() {
+        const email = document.getElementById('email').value;
+        if (!email) return alert('Enter email');
+        await supabase.auth.resetPasswordForEmail(email);
+        alert('Reset email sent');
+    }
+
+    async function doLogout() { await supabase.auth.signOut(); location.reload(); }
+
+    window.onload = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) { currentUser = user; await loadUserProfile(); }
+    };
+</script>
 </body>
 </html>
