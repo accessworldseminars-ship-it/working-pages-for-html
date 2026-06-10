@@ -205,17 +205,19 @@
     let currentUser = null;
     let allLessons = [];
     
-    // Category mapping based on keywords in titles
+    // Category mapping
     function getCategory(title) {
         const titleLower = title.toLowerCase();
-        if (titleLower.includes('unlock') || titleLower.includes('incredible')) return 'Unlock Your Incredible Self';
-        if (titleLower.includes('coach') || titleLower.includes('group')) return 'Group Coaching';
-        if (titleLower.includes('emotional') || titleLower.includes('clearing') || titleLower.includes('gift') || titleLower.includes('grey room')) return 'Emotional Clearing';
-        if (titleLower.includes('morning') || titleLower.includes('routine')) return 'Morning Routine';
-        if (titleLower.includes('strategic') || titleLower.includes('visioning')) return 'Strategic Visioning';
-        if (titleLower.includes('nlp')) return 'NLP Masterclass';
-        if (titleLower.includes('free') || titleLower.includes('introduction') || titleLower.includes('intro')) return 'Free Introductions';
-        return 'Other Content';
+        if (titleLower.includes('unlock') || titleLower.includes('incredible')) return '📘 Unlock Your Incredible Self';
+        if (titleLower.includes('coach') || titleLower.includes('group')) return '👥 Group Coaching';
+        if (titleLower.includes('emotional') || titleLower.includes('clearing') || titleLower.includes('gift') || titleLower.includes('grey')) return '💚 Emotional Clearing';
+        if (titleLower.includes('morning') || titleLower.includes('routine')) return '🌅 Morning Routine';
+        if (titleLower.includes('strategic') || titleLower.includes('visioning')) return '🎯 Strategic Visioning';
+        if (titleLower.includes('nlp')) return '🧠 NLP Masterclass';
+        if (titleLower.includes('free') || titleLower.includes('introduction') || titleLower.includes('intro')) return '🎓 Free Introductions';
+        if (titleLower.includes('health')) return '🏥 Health & Healing';
+        if (titleLower.includes('memory')) return '📖 Memory Training';
+        return '📁 Other Content';
     }
     
     async function login() {
@@ -263,7 +265,7 @@
             grouped[category].push(lesson);
         });
         
-        // Build accordion HTML with clickable video items
+        // Build accordion HTML
         let html = '';
         let isFirst = true;
         
@@ -271,7 +273,7 @@
             html += `
                 <div class="accordion-item">
                     <div class="accordion-header" onclick="toggleAccordion(this)">
-                        <span>📁 ${category} <span class="count-badge">${lessons.length}</span></span>
+                        <span>${category} <span class="count-badge">${lessons.length}</span></span>
                         <span class="icon">▼</span>
                     </div>
                     <div class="accordion-content ${isFirst ? 'active' : ''}">
@@ -289,10 +291,10 @@
     
     function buildVideoList(lessons) {
         let html = '';
-        lessons.forEach((lesson, index) => {
+        lessons.forEach((lesson) => {
             html += `
                 <div class="video-item" onclick="playVideo(${lesson.id}, this)">
-                    <span class="video-title">🎬 ${escapeHtml(lesson.title)}</span>
+                    <span class="video-title">▶ ${escapeHtml(lesson.title)}</span>
                     <span class="play-icon">▶</span>
                 </div>
             `;
@@ -301,7 +303,6 @@
     }
     
     function playVideo(videoId, element) {
-        // Find the video
         const video = allLessons.find(v => v.id === videoId);
         if (!video) return;
         
@@ -310,10 +311,8 @@
             item.classList.remove('active');
         });
         
-        // Add active class to clicked item
         element.classList.add('active');
         
-        // Update player
         const playerArea = document.getElementById('video-player');
         const playerTitle = document.getElementById('player-title');
         const playerDescription = document.getElementById('player-description');
@@ -323,10 +322,7 @@
         playerDescription.innerText = video.description || 'No description available.';
         playerIframe.src = video.google_drive_embed_url;
         
-        // Show player area
         playerArea.classList.add('active');
-        
-        // Scroll to player
         playerArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
@@ -334,11 +330,9 @@
         const playerArea = document.getElementById('video-player');
         const playerIframe = document.getElementById('player-iframe');
         
-        // Stop video by clearing src
         playerIframe.src = '';
         playerArea.classList.remove('active');
         
-        // Remove active class from video items
         document.querySelectorAll('.video-item').forEach(item => {
             item.classList.remove('active');
         });
@@ -367,7 +361,6 @@
         location.reload();
     }
     
-    // Auto-login if already logged in
     window.onload = async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
