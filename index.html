@@ -4,98 +4,365 @@
     <title>AccessWorld Members Area</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: Arial; background: #1A2744; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 10px; padding: 20px; }
-        input, button { padding: 10px; margin: 5px; }
-        button { background: #1D9E75; color: white; border: none; cursor: pointer; }
-        .video-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
-        iframe { width: 100%; height: 300px; border: none; }
-        .error { color: red; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #1A2744;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        .login-box {
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #1D9E75;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .logout-btn {
+            background: #dc3545;
+            width: auto;
+            padding: 8px 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        /* Accordion Styles */
+        .accordion-item {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .accordion-header {
+            background: #f5f5f5;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        .accordion-header:hover {
+            background: #e8e8e8;
+        }
+        .accordion-header .icon {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+        .accordion-header.active .icon {
+            transform: rotate(180deg);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            background: white;
+        }
+        .accordion-content.active {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        /* Video List Styles */
+        .video-list {
+            padding: 10px 0;
+        }
+        .video-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .video-item:hover {
+            background: #f0f0f0;
+        }
+        .video-item.active {
+            background: #e3f2fd;
+            border-left: 4px solid #1D9E75;
+        }
+        .video-title {
+            font-weight: 500;
+            color: #333;
+        }
+        .play-icon {
+            color: #1D9E75;
+            font-size: 20px;
+        }
+        
+        /* Video Player Area */
+        .video-player-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+        .video-player-area.active {
+            display: block;
+        }
+        .video-player-area h3 {
+            color: #1A2744;
+            margin-bottom: 10px;
+        }
+        .video-player-area p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .video-player-area iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 8px;
+        }
+        .close-player {
+            background: #6c757d;
+            width: auto;
+            padding: 8px 20px;
+            margin-top: 15px;
+        }
+        .count-badge {
+            background: #1D9E75;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .error {
+            color: red;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
-<div class="container" id="app">
-    <div id="login">
-        <h1>AccessWorld Seminars</h1>
-        <input type="email" id="email" placeholder="Email"><br>
-        <input type="password" id="password" placeholder="Password"><br>
-        <button onclick="doLogin()">Login</button>
-        <div id="msg" class="error"></div>
+<div class="container">
+    <!-- LOGIN SECTION -->
+    <div id="login-section">
+        <div class="login-box">
+            <h1>AccessWorld Seminars</h1>
+            <p>Member Portal</p>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <div id="login-error" class="error"></div>
+        </div>
     </div>
-    <div id="dashboard" style="display:none">
-        <button onclick="doLogout()">Logout</button>
-        <h2>Welcome, <span id="user"></span></h2>
-        <div id="videos"></div>
+
+    <!-- DASHBOARD SECTION -->
+    <div id="dashboard-section" style="display:none;">
+        <div class="header">
+            <h1>📚 AccessWorld Library</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div id="accordion-container"></div>
+        
+        <!-- Video Player Area -->
+        <div id="video-player" class="video-player-area">
+            <h3 id="player-title"></h3>
+            <p id="player-description"></p>
+            <iframe id="player-iframe" src=""></iframe>
+            <button class="close-player" onclick="closePlayer()">Close Video</button>
+        </div>
     </div>
 </div>
 
 <script>
     const SUPABASE_URL = "https://zwwodopezadqjazhajmx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3d29kb3BlemFkcWphemhham14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5MjM5OTIsImV4cCI6MjA2MTQ5OTk5Mn0.JHp0lnznVx_y-6rRO2vP4Qyp5ZzH9jELWvLN06M3N8Y";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3d29kb3BlemFkcWphemhham14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5MjM5OTIsImV4cCI6MjA2MTQ5OTk5Mn0.JHp0lnznVx_y-6rRO2vP4Qyp5ZzH9jELWvLN06M3N8Y";  // <-- PASTE YOUR KEY
     
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+    let allLessons = [];
     
-    async function doLogin() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const msg = document.getElementById('msg');
-        
-        msg.innerText = "Logging in...";
-        
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        
-        if (error) {
-            msg.innerText = error.message;
-            return;
-        }
-        
-        document.getElementById('user').innerText = data.user.email;
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        
-        // Load videos
-        loadVideos();
+    // Category mapping based on keywords in titles
+    function getCategory(title) {
+        const titleLower = title.toLowerCase();
+        if (titleLower.includes('unlock') || titleLower.includes('incredible')) return 'Unlock Your Incredible Self';
+        if (titleLower.includes('coach') || titleLower.includes('group')) return 'Group Coaching';
+        if (titleLower.includes('emotional') || titleLower.includes('clearing') || titleLower.includes('gift') || titleLower.includes('grey room')) return 'Emotional Clearing';
+        if (titleLower.includes('morning') || titleLower.includes('routine')) return 'Morning Routine';
+        if (titleLower.includes('strategic') || titleLower.includes('visioning')) return 'Strategic Visioning';
+        if (titleLower.includes('nlp')) return 'NLP Masterclass';
+        if (titleLower.includes('free') || titleLower.includes('introduction') || titleLower.includes('intro')) return 'Free Introductions';
+        return 'Other Content';
     }
     
-    async function loadVideos() {
-        const videosDiv = document.getElementById('videos');
-        videosDiv.innerHTML = "Loading videos...";
+    async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('login-error');
+        
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { errorDiv.innerText = error.message; return; }
+        
+        currentUser = data.user;
+        await loadContent();
+        
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('dashboard-section').style.display = 'block';
+    }
+    
+    async function loadContent() {
+        const container = document.getElementById('accordion-container');
+        container.innerHTML = '<p>Loading content...</p>';
         
         const { data, error } = await supabase
             .from('lessons')
             .select('*')
+            .eq('tier_required', 1)
             .order('sort_order');
         
         if (error) {
-            videosDiv.innerHTML = "<p class='error'>Error: " + error.message + "</p>";
-            console.error(error);
+            container.innerHTML = `<p class="error">Error: ${error.message}</p>`;
             return;
         }
         
-        console.log("Videos found:", data.length);
+        allLessons = data;
         
-        if (data.length === 0) {
-            videosDiv.innerHTML = "<p>No videos found in database.</p>";
+        if (allLessons.length === 0) {
+            container.innerHTML = '<p>No content available yet.</p>';
             return;
         }
         
-        let html = "";
-        for (let video of data) {
-            if (video.tier_required === 1) {
-                html += `
-                    <div class="video-card">
-                        <h3>${video.title}</h3>
-                        <p>${video.description || ''}</p>
-                        <iframe src="${video.google_drive_embed_url}"></iframe>
+        // Group lessons by category
+        const grouped = {};
+        allLessons.forEach(lesson => {
+            const category = getCategory(lesson.title);
+            if (!grouped[category]) grouped[category] = [];
+            grouped[category].push(lesson);
+        });
+        
+        // Build accordion HTML with clickable video items
+        let html = '';
+        let isFirst = true;
+        
+        for (const [category, lessons] of Object.entries(grouped)) {
+            html += `
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>📁 ${category} <span class="count-badge">${lessons.length}</span></span>
+                        <span class="icon">▼</span>
                     </div>
-                `;
-            }
+                    <div class="accordion-content ${isFirst ? 'active' : ''}">
+                        <div class="video-list">
+                            ${buildVideoList(lessons)}
+                        </div>
+                    </div>
+                </div>
+            `;
+            isFirst = false;
         }
         
-        videosDiv.innerHTML = html || "<p>No Tier 1 videos available.</p>";
+        container.innerHTML = html;
     }
     
-    async function doLogout() {
+    function buildVideoList(lessons) {
+        let html = '';
+        lessons.forEach((lesson, index) => {
+            html += `
+                <div class="video-item" onclick="playVideo(${lesson.id}, this)">
+                    <span class="video-title">🎬 ${escapeHtml(lesson.title)}</span>
+                    <span class="play-icon">▶</span>
+                </div>
+            `;
+        });
+        return html;
+    }
+    
+    function playVideo(videoId, element) {
+        // Find the video
+        const video = allLessons.find(v => v.id === videoId);
+        if (!video) return;
+        
+        // Remove active class from all video items
+        document.querySelectorAll('.video-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Add active class to clicked item
+        element.classList.add('active');
+        
+        // Update player
+        const playerArea = document.getElementById('video-player');
+        const playerTitle = document.getElementById('player-title');
+        const playerDescription = document.getElementById('player-description');
+        const playerIframe = document.getElementById('player-iframe');
+        
+        playerTitle.innerText = video.title;
+        playerDescription.innerText = video.description || 'No description available.';
+        playerIframe.src = video.google_drive_embed_url;
+        
+        // Show player area
+        playerArea.classList.add('active');
+        
+        // Scroll to player
+        playerArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    function closePlayer() {
+        const playerArea = document.getElementById('video-player');
+        const playerIframe = document.getElementById('player-iframe');
+        
+        // Stop video by clearing src
+        playerIframe.src = '';
+        playerArea.classList.remove('active');
+        
+        // Remove active class from video items
+        document.querySelectorAll('.video-item').forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+    
+    function toggleAccordion(element) {
+        const content = element.nextElementSibling;
+        const icon = element.querySelector('.icon');
+        
+        content.classList.toggle('active');
+        icon.style.transform = content.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    async function logout() {
         await supabase.auth.signOut();
         location.reload();
     }
@@ -104,10 +371,10 @@
     window.onload = async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-            document.getElementById('user').innerText = user.email;
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            loadVideos();
+            currentUser = user;
+            await loadContent();
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
         }
     };
 </script>
