@@ -1,228 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AccessWorld Members Area</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: Arial, sans-serif;
-            background: #1A2744;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-        }
-        .login-box, .disclaimer-box {
-            max-width: 500px;
-            margin: 50px auto;
-            text-align: center;
-        }
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            background: #1D9E75;
-            color: white;
-            cursor: pointer;
-        }
-        .tier-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-        .tier-1 { background: #cce5ff; color: #004085; }
-        .lesson-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .lesson-card iframe {
-            width: 100%;
-            height: 300px;
-            border: none;
-            margin-top: 10px;
-        }
-        .admin-panel {
-            border: 2px solid #1D9E75;
-            padding: 20px;
-            margin-top: 30px;
-            background: #f0fdf9;
-        }
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .nav-buttons button {
-            width: auto;
-            background: #6c757d;
-        }
-        .logout-btn {
-            background: #dc3545;
-            width: auto;
-        }
+        body { font-family: Arial; background: #1A2744; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 10px; padding: 20px; }
+        input, button { padding: 10px; margin: 5px; }
+        button { background: #1D9E75; color: white; border: none; cursor: pointer; }
+        .video-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        iframe { width: 100%; height: 300px; border: none; }
+        .error { color: red; }
     </style>
 </head>
 <body>
 <div class="container" id="app">
-    <div id="view-login" class="login-box">
+    <div id="login">
         <h1>AccessWorld Seminars</h1>
-        <p>Member Portal</p>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
+        <input type="email" id="email" placeholder="Email"><br>
+        <input type="password" id="password" placeholder="Password"><br>
         <button onclick="doLogin()">Login</button>
-        <p><a href="#" onclick="resetPassword()">Forgot password?</a></p>
-        <div id="status-msg" style="margin-top:10px; color:red;"></div>
+        <div id="msg" class="error"></div>
     </div>
-
-    <div id="view-disclaimer" style="display:none;">
-        <div class="disclaimer-box">
-            <h2>Legal Disclaimer & NDA</h2>
-            <div style="border:1px solid #ddd; padding:15px; height:200px; overflow-y:scroll;">
-                <p><strong>IMPORTANT NOTICE:</strong> The information provided is for educational purposes only...</p>
-                <p><strong>NON-DISCLOSURE AGREEMENT:</strong> You agree not to share any materials with third parties.</p>
-            </div>
-            <label><input type="checkbox" id="agree-checkbox"> I agree to the Disclaimer and NDA</label>
-            <button onclick="signDisclaimer()">Continue</button>
-        </div>
-    </div>
-
-    <div id="view-dashboard" style="display:none;">
-        <div style="display:flex; justify-content:space-between;">
-            <h1>Welcome, <span id="user-email"></span></h1>
-            <div><span id="user-tier-badge" class="tier-badge"></span> <button class="logout-btn" onclick="doLogout()">Logout</button></div>
-        </div>
-        <div class="nav-buttons">
-            <button onclick="showTierContent('tier1')">Tier 1 - Core</button>
-            <button onclick="showTierContent('tier2')">Tier 2 - Advanced</button>
-            <button onclick="showTierContent('tier3')">Tier 3 - Lifelong</button>
-            <button onclick="showTierContent('tier4')">Tier 4 - Inner Circle</button>
-        </div>
-        <div id="tier1-content" class="tier-content"></div>
-        <div id="tier2-content" class="tier-content" style="display:none;"></div>
-        <div id="tier3-content" class="tier-content" style="display:none;"></div>
-        <div id="tier4-content" class="tier-content" style="display:none;"></div>
-        <div id="admin-panel" class="admin-panel" style="display:none;">
-            <h3>Admin: Register New Client</h3>
-            <input type="email" id="new-email" placeholder="Client Email">
-            <input type="password" id="new-password" placeholder="Password">
-            <select id="new-tier"><option value="1">Tier 1</option><option value="2">Tier 2</option><option value="3">Tier 3</option><option value="4">Tier 4</option></select>
-            <button onclick="adminCreateUser()">Create Client</button>
-            <div id="admin-msg"></div>
-        </div>
+    <div id="dashboard" style="display:none">
+        <button onclick="doLogout()">Logout</button>
+        <h2>Welcome, <span id="user"></span></h2>
+        <div id="videos"></div>
     </div>
 </div>
 
 <script>
     const SUPABASE_URL = "https://zwwodopezadqjazhajmx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3d29kb3BlemFkcWphemhham14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzQ4ODEsImV4cCI6MjA5NjYxMDg4MX0.xiY_Kg0O0_g714YRHmgcuSd08qKi9ErJ1iz3ehZetIg";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3d29kb3BlemFkcWphemhham14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5MjM5OTIsImV4cCI6MjA2MTQ5OTk5Mn0.JHp0lnznVx_y-6rRO2vP4Qyp5ZzH9jELWvLN06M3N8Y";
+    
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    let currentUser = null;
-    let currentTier = 0;
-
+    
     async function doLogin() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        const msg = document.getElementById('msg');
+        
+        msg.innerText = "Logging in...";
+        
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) return document.getElementById('status-msg').innerText = error.message;
-        currentUser = data.user;
-        await loadUserProfile();
-    }
-
-    async function loadUserProfile() {
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-        if (!profile) {
-            await supabase.from('profiles').insert([{ id: currentUser.id, email: currentUser.email, membership_tier: 1, disclaimer_signed: false }]);
-            currentTier = 1;
-            showDisclaimer();
-        } else {
-            currentTier = profile.membership_tier;
-            if (!profile.disclaimer_signed) showDisclaimer();
-            else showDashboard();
+        
+        if (error) {
+            msg.innerText = error.message;
+            return;
         }
+        
+        document.getElementById('user').innerText = data.user.email;
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        
+        // Load videos
+        loadVideos();
     }
-
-    function showDisclaimer() {
-        document.getElementById('view-login').style.display = 'none';
-        document.getElementById('view-disclaimer').style.display = 'block';
-    }
-
-    async function signDisclaimer() {
-        if (!document.getElementById('agree-checkbox').checked) return alert('You must agree');
-        await supabase.from('profiles').update({ disclaimer_signed: true }).eq('id', currentUser.id);
-        showDashboard();
-    }
-
-    async function showDashboard() {
-        document.getElementById('view-login').style.display = 'none';
-        document.getElementById('view-disclaimer').style.display = 'none';
-        document.getElementById('view-dashboard').style.display = 'block';
-        document.getElementById('user-email').innerText = currentUser.email;
-        document.getElementById('user-tier-badge').innerText = `Tier ${currentTier}`;
-        if (currentUser.email === 'bossejosh@yahoo.com') document.getElementById('admin-panel').style.display = 'block';
-        await loadLessons();
-        showTierContent('tier1');
-    }
-
-    async function loadLessons() {
-        const { data: lessons } = await supabase.from('lessons').select('*').order('sort_order');
-        for (let tier = 1; tier <= 4; tier++) {
-            const container = document.getElementById(`tier${tier}-content`);
-            const tierLessons = lessons.filter(l => l.tier_required <= tier);
-            if (!tierLessons.length) { container.innerHTML = '<p>No lessons yet</p>'; continue; }
-            let html = '';
-            for (let lesson of tierLessons) {
-                if (lesson.tier_required <= currentTier) {
-                    html += `<div class="lesson-card"><h4>${lesson.title}</h4><p>${lesson.description || ''}</p><iframe src="${lesson.google_drive_embed_url}"></iframe></div>`;
-                } else {
-                    html += `<div class="lesson-card" style="opacity:0.6"><h4>🔒 ${lesson.title}</h4><p>Upgrade to Tier ${lesson.tier_required} to unlock</p></div>`;
-                }
+    
+    async function loadVideos() {
+        const videosDiv = document.getElementById('videos');
+        videosDiv.innerHTML = "Loading videos...";
+        
+        const { data, error } = await supabase
+            .from('lessons')
+            .select('*')
+            .order('sort_order');
+        
+        if (error) {
+            videosDiv.innerHTML = "<p class='error'>Error: " + error.message + "</p>";
+            console.error(error);
+            return;
+        }
+        
+        console.log("Videos found:", data.length);
+        
+        if (data.length === 0) {
+            videosDiv.innerHTML = "<p>No videos found in database.</p>";
+            return;
+        }
+        
+        let html = "";
+        for (let video of data) {
+            if (video.tier_required === 1) {
+                html += `
+                    <div class="video-card">
+                        <h3>${video.title}</h3>
+                        <p>${video.description || ''}</p>
+                        <iframe src="${video.google_drive_embed_url}"></iframe>
+                    </div>
+                `;
             }
-            container.innerHTML = html;
         }
+        
+        videosDiv.innerHTML = html || "<p>No Tier 1 videos available.</p>";
     }
-
-    function showTierContent(tier) {
-        for (let i = 1; i <= 4; i++) document.getElementById(`tier${i}-content`).style.display = 'none';
-        document.getElementById(`${tier}-content`).style.display = 'block';
+    
+    async function doLogout() {
+        await supabase.auth.signOut();
+        location.reload();
     }
-
-    async function adminCreateUser() {
-        const email = document.getElementById('new-email').value;
-        const password = document.getElementById('new-password').value;
-        const tier = parseInt(document.getElementById('new-tier').value);
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) return document.getElementById('admin-msg').innerText = error.message;
-        await supabase.from('profiles').insert([{ id: data.user.id, email, membership_tier: tier, disclaimer_signed: false }]);
-        document.getElementById('admin-msg').innerText = `✅ ${email} created at Tier ${tier}`;
-    }
-
-    async function resetPassword() {
-        const email = document.getElementById('email').value;
-        if (!email) return alert('Enter email');
-        await supabase.auth.resetPasswordForEmail(email);
-        alert('Reset email sent');
-    }
-
-    async function doLogout() { await supabase.auth.signOut(); location.reload(); }
-
+    
+    // Auto-login if already logged in
     window.onload = async () => {
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) { currentUser = user; await loadUserProfile(); }
+        if (user) {
+            document.getElementById('user').innerText = user.email;
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadVideos();
+        }
     };
 </script>
 </body>
